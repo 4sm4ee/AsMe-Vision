@@ -14,7 +14,7 @@
     margin-top: -0.8rem;
     color: rgb(173, 230, 255);
 }
-.navigation_links a,.navigation_links_login{
+.navigation_links a,.navigation_links_login a{
     font-size: 1.4rem;
     text-decoration: none;
     color: black;

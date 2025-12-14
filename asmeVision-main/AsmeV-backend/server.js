@@ -9,6 +9,7 @@ import cors from "cors";
 import { GoogleGenAI, createUserContent } from "@google/genai";
 import User from "./models/user.js";
 import Image from "./models/image.js";
+import user from "./models/user.js";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/ia_db")
   .catch(err => console.log("❌ MongoDB error:", err));
 
 // ==================== MIDDLEWARE AUTH ====================
+// Middleware d'authentification de base
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -52,19 +54,42 @@ function authenticateToken(req, res, next) {
     return res.status(401).json({ error: "Access denied. No token provided." });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || "your_secret_key_2024", (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET || "your_secret_key_2024", (err, decoded) => {
     if (err) {
+      console.error('JWT verification error:', err.message);
       return res.status(403).json({ error: "Invalid or expired token." });
     }
-    req.user = user;
+    
+    console.log('Token décodé:', decoded); // Pour debug
+    req.user = decoded;
     next();
   });
-}// Admin Middleware (add after authenticateToken)
+}
+
+// Middleware Admin (version corrigée)
 function authenticateAdmin(req, res, next) {
-  authenticateToken(req, res, () => {
-    if (req.user.role !== 'admin') {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Access denied. No token provided." });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET || "your_secret_key_2024", (err, decoded) => {
+    if (err) {
+      console.error('JWT verification error:', err.message);
+      return res.status(403).json({ error: "Invalid or expired token." });
+    }
+    
+    console.log('Token décodé dans authenticateAdmin:', decoded); // Pour debug
+    
+    // Vérifier le rôle admin
+    if (!decoded.role || decoded.role !== 'admin') {
+      console.error('Role check failed:', decoded.role);
       return res.status(403).json({ error: "Access denied. Admin only." });
     }
+    
+    req.user = decoded;
     next();
   });
 }
@@ -288,52 +313,88 @@ app.put('/update-image/:id', authenticateToken, async (req, res) => {
 // Admin Routes (add after image routes, around line 250)
 
 // Get all users
-app.get("/admin/users", authenticateAdmin, async (req, res) => {
+app.get("/admin/dashboard", authenticateAdmin, async (req, res) => {
   try {
-    const users = await User.find({}, '-password'); // Exclude passwords
+    const users = await User.find({}, '-password');
+    const totalAdmins = await User.countDocuments({ role: "admin" });
+    const totalUsers = await User.countDocuments({ role: "user" });
+    const totalImages = await Image.countDocuments({});
+    const adminConnected = await User.findById(req.user.userId, "-password");
+    res.json({
+      users,
+      statistics: {
+        totalAdmins,
+        totalUsers,
+        totalImages,
+        totalAll: users.length
+      },
+      adminConnected: {
+        id: adminConnected._id,
+        firstname: adminConnected.firstname,
+        lastname: adminConnected.lastname,
+        email: adminConnected.email
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/admin/lists', authenticateAdmin, async (req, res) => {
+  try {
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: 'images',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'images'
+        }
+      },
+      {
+        $project: {
+          firstname: 1,
+          lastname: 1,
+          email: 1,
+          role: 1,
+          imageCount: { $size: '$images' }
+        }
+      }
+    ]);
+
     res.json({ users });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// Delete a user
-app.delete("/admin/user/:id", authenticateAdmin, async (req, res) => {
+
+app.put('/admin/users/:id', authenticateAdmin, async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    // Optionally: Delete associated images
-    await Image.deleteMany({ userId: req.params.id });
-    res.json({ success: true });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json(updatedUser);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// Get all images (across all users)
-app.get("/admin/images", authenticateAdmin, async (req, res) => {
+
+app.delete('/admin/users/:id', authenticateAdmin, async (req, res) => {
   try {
-    const images = await Image.find().sort({ uploadedAt: -1 });
-    res.json({ images });
+    await User.findByIdAndDelete(req.params.id);
+    res.status(204).send();
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-// Delete an image
-app.delete("/admin/image/:id", authenticateAdmin, async (req, res) => {
-  try {
-    const image = await Image.findByIdAndDelete(req.params.id);
-    if (!image) return res.status(404).json({ error: 'Image not found' });
-    // Delete file from disk
-    if (fs.existsSync(`.${image.url}`)) {
-      fs.unlinkSync(`.${image.url}`);
-    }
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+
 app.listen(port, () => 
   console.log(`🚀 Server running on http://localhost:${port}`)
 );
