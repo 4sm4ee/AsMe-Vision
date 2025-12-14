@@ -1,12 +1,9 @@
-// section.jsx
 import { useState } from "react";
 import "./section.css";
-import image1 from "./assets/ChatGPTImage.png";
+import image1 from "../assets/ChatGPTImage.png";
 import AuthModal from "./AuthModal";
-
 export default function Section() {
     const [showModal, setShowModal] = useState(false);
-
     return (
         <>
             <div className='row'>

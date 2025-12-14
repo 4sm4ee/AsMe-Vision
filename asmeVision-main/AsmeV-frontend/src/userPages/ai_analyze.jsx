@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import './section.css';
-import image1 from './assets/ChatGPTImage.png';
+import image1 from '../assets/ChatGPTImage.png';
 
 export default function Upload() {
     const [description, setDescription] = useState('');

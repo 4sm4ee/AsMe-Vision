@@ -10,15 +10,33 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 import React from "react";
-import ReactDOM from "react-dom/client";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./assets/css/animate.min.css";
-import "./assets/scss/light-bootstrap-dashboard-react.scss";
-import "./assets/css/demo.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import App from "./App.jsx";
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+import Dashboard from "./views/Dashboard.jsx";
+import UserProfile from "./views/UserProfile.jsx";
+import TableList from "./views/TableList.jsx";
+import "./routes.css";
+
+const dashboardRoutes = [
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    icon: "fas fa-chart-pie",
+    component: <Dashboard />,
+    layout: "/admin"
+  },
+  {
+    path: "/user",
+    name: "User Profile",
+    icon: "fas fa-user",
+    component: <UserProfile />,
+    layout: "/admin"
+  },
+  {
+    path: "/table",
+    name: "Table List",
+    icon: "fas fa-table",
+    component: <TableList />,
+    layout: "/admin"
+  }
+];
+
+export default dashboardRoutes;
