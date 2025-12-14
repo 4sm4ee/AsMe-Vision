@@ -1,9 +1,9 @@
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
 
-export default function AuthModal() {
-    const { showAuthModal, setShowAuthModal, isSignup, setIsSignup } = useContext(AuthContext);
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function AuthModal({ showModal, setShowModal, initialIsSignup = false }) {
+    const [isSignup, setIsSignup] = useState(initialIsSignup);
     const [formData, setFormData] = useState({
         firstname: "",
         lastname: "",
@@ -32,14 +32,14 @@ export default function AuthModal() {
                 body: JSON.stringify(formData)
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.error || "An error occurred");
-                return;
-            }
-
             if (isSignup) {
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    setError(data.error || "An error occurred");
+                    return;
+                }
+
                 setIsSignup(false);
                 setFormData({
                     firstname: "",
@@ -48,10 +48,26 @@ export default function AuthModal() {
                     password: ""
                 });
             } else {
+                const data = await response.json();
+                
+                console.log("Login response:", data);
+
+                if (!response.ok) {
+                    setError(data.error || "Invalid credentials");
+                    return;
+                }
+
+                if (!data.user || !data.token) {
+                    console.error("Invalid response structure:", data);
+                    setError("Invalid server response");
+                    return;
+                }
+
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
+                
                 window.dispatchEvent(new Event('storage'));
-                setShowAuthModal(false);
+                
                 navigate("/upload");
             }
         } catch (err) {
@@ -60,7 +76,7 @@ export default function AuthModal() {
         }
     }
 
-    if (!showAuthModal) return null;
+    if (!showModal) return null;
 
     return (
         <div className="modal-backdrop">
@@ -129,8 +145,14 @@ export default function AuthModal() {
                 </form>
 
                 <button className="close-btn" onClick={() => {
-                    setShowAuthModal(false);
+                    setShowModal(false);
                     setError("");
+                    setFormData({
+                        firstname: "",
+                        lastname: "",
+                        email: "",
+                        password: ""
+                    });
                 }}>
                     X
                 </button>

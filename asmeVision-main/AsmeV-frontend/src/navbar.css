@@ -14,7 +14,7 @@
     margin-top: -0.8rem;
     color: rgb(173, 230, 255);
 }
-.navigation_links a{
+.navigation_links a,.navigation_links_login{
     font-size: 1.4rem;
     text-decoration: none;
     color: black;
@@ -23,4 +23,16 @@
     margin-left: 7rem;
     font-weight: bold;
 }
+.navigation_links_login > a:nth-child(1) {
+    margin-left: 1rem;
+    font-weight: bold;
+}
+.navigation_links_second_login{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
 

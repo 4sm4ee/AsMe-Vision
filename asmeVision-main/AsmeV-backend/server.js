@@ -223,7 +223,40 @@ app.post("/analyze", authenticateToken, upload.single("image"), async (req, res)
     res.status(500).json({ error: "Error during analysis: " + err.message });
   }
 });
-
+app.delete("/delete-image/:id", authenticateToken, async (req, res) => {
+  try {
+    const imageId = req.params.id;
+    console.log("🗑️ Delete request for image:", imageId);
+    
+    const image = await Image.findOne({ 
+      _id: imageId, 
+      userId: req.user.userId 
+    });
+    
+    if (!image) {
+      return res.status(404).json({ error: "Image not found or unauthorized" });
+    }
+    
+    // Supprimer le fichier physique
+    const filePath = `uploads/${image.url.split('/').pop()}`;
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log("✅ File deleted:", filePath);
+    }
+    
+    // Supprimer de la base de données
+    await Image.deleteOne({ _id: imageId });
+    console.log("✅ Image deleted from DB");
+    
+    res.json({ 
+      success: true,
+      message: "Image deleted successfully" 
+    });
+  } catch (err) {
+    console.error("❌ Error deleting image:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 // Récupérer l'historique des images de l'utilisateur
 app.get("/my-images", authenticateToken, async (req, res) => {
   try {
@@ -250,6 +283,7 @@ app.put('/update-image/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 }); 
+
 
 // Admin Routes (add after image routes, around line 250)
 
