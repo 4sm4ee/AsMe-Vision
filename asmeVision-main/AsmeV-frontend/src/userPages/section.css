@@ -10,7 +10,7 @@
     font-size: 3rem;
     font-weight: 100px;
     letter-spacing: 5px;
-    margin-top: -2rem;
+    margin-top: -2.5rem;
     color: rgb(173, 230, 255);
 }
 
@@ -20,7 +20,7 @@
 
 /* Animation pulse pour l'image principale de la page */
 .pulse-img {
-    animation: pulse-page 3s ease-in-out infinite;
+    animation: pulse-page 2s ease-in-out infinite;
     display: block;
     position: relative;
     z-index: 2;
@@ -32,13 +32,12 @@
         transform: scale(1); 
     }
     50% { 
-        transform: scale(1.05); 
+        transform: scale(1.02); 
     }
     100% { 
         transform: scale(1); 
     }
 }
-
 /* Texte de description */
 .description-text {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -59,7 +58,7 @@
     font-weight: 600;
     border: none;
     border-radius: 25px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -290,4 +289,8 @@
     border: none;
     padding: 5px 10px;
     cursor: pointer;
+}
+
+.analysis_result {
+    background: rgba(0,0,0,0.2);
 }
