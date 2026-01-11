@@ -84,12 +84,6 @@ export default function Upload() {
 
     return (
         <>
-            {userName && (
-                <div className="welcome-message text-center mb-4">
-                    <h3>Bonjour {userName} ! 👋</h3>
-                </div>
-            )}
-            
             <div className='row'>
                 <div className='col-md-6 d-flex flex-column justify-content-center align-items-center'>
                     <div className="img-wrapper">
@@ -107,7 +101,7 @@ export default function Upload() {
                     </p>
                 </div>
                 
-                <div className="col-md-6 d-flex flex-column justify-content-center align-items-center">
+                <div className="col-md-6 d-flex flex-column justify-content-center align-items-center mt-5">
                     {uploadedImage && (
                         <div className="uploaded-image-preview mb-3">
                             <img 
@@ -160,7 +154,7 @@ export default function Upload() {
                         </div>
                     )}
                     {description && (
-                        <div className="alert alert-success mt-3 w-100">
+                        <div className="analysis_result mt-3 w-100">
                             <h5>Analysis Result:</h5>
                             <p>{description}</p>
                         </div>

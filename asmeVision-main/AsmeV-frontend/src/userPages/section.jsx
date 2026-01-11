@@ -8,10 +8,10 @@ export default function Section() {
         <>
             <div className='row'>
                 <div className='col-md-6 d-flex flex-column justify-content-center align-items-center'>
-                    <div className="img-wrapper">
+                    <div className="img-wrapper mt-4">
                         <img
                             width={350}
-                            height={320}
+                            height={310}
                             src={image1}
                             alt=""
                             className="pulse-img"

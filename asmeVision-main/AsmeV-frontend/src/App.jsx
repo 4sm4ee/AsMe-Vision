@@ -18,8 +18,10 @@ import AdminLayout from "./layouts/Admin.jsx";
 export function HomeLayout() {
   return (
     <>
+    <div className="background_field">
       <Navbar />
       <Outlet />
+    </div>
     </>
   );
 }
@@ -28,8 +30,11 @@ export function HomeLayout() {
 export function UploadLayout() {
   return (
     <>
+    <div className="background_field">
       <Navbarlogin />
       <Outlet />
+    </div>
+      
     </>
   );
 }

@@ -295,7 +295,6 @@ app.get("/my-images", authenticateToken, async (req, res) => {
   }
 });
 
-// Update image description
 app.put('/update-image/:id', authenticateToken, async (req, res) => {
   try {
     const { description } = req.body;
@@ -310,9 +309,6 @@ app.put('/update-image/:id', authenticateToken, async (req, res) => {
 }); 
 
 
-// Admin Routes (add after image routes, around line 250)
-
-// Get all users
 app.get("/admin/dashboard", authenticateAdmin, async (req, res) => {
   try {
     const users = await User.find({}, '-password');

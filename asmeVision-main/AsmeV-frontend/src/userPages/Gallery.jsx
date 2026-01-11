@@ -117,18 +117,15 @@ export default function Gallery() {
       </div>
     );
   }
-
-  if (error) {
-    return (
+  if(error){
+    return(
       <div className="historique-container">
         <div className="error-message">
           <p>{error}</p>
         </div>
       </div>
-    );
-  }
-
-  if (images.length === 0) {
+    );}
+  if (images.length === 0){
     return (
       <div className="historique-container">
         <div className="empty-state">
@@ -136,14 +133,11 @@ export default function Gallery() {
           <a href="/upload">Analyser une image</a>
         </div>
       </div>
-    );
-  }
-
+    );}
   return (
-    <div className="historique-container">
-      <div className="container">
+    <>
+      <div className="container mt-4">
         <div className="row">
-          {/* Swiper à gauche - col-md-6 */}
           <div className="col-md-6 col-12">
             <div className="swiper-section">
               <Swiper
@@ -161,8 +155,7 @@ export default function Gallery() {
                   <SwiperSlide key={image._id}>
                     <div 
                       className="swiper-image-container"
-                      onClick={() => setSelectedImage(image)}
-                    >
+                      onClick={() => setSelectedImage(image)}>
                       <img 
                         src={`http://localhost:3000${image.url}`} 
                         alt={image.filename}
@@ -174,21 +167,18 @@ export default function Gallery() {
               </Swiper>
             </div>
           </div>
-
           {/* Description à droite - col-md-6 */}
           <div className="col-md-6 col-12">
             <div className="details-section">
               {selectedImage ? (
                 <div className="details-content">
                   <div className="description-box">
-                    <h3>Description</h3>
+                    <h3 className='text-dark'>Description</h3>
                     <p className="description-text">{selectedImage.description}</p>
                   </div>
-                  
-                  <div className="date-box">
+                  <div className="date-box text-dark">
                     <strong>Date:</strong> {formatDate(selectedImage.uploadedAt)}
                   </div>
-
                   <button 
                     className="delete-btn"
                     onClick={() => handleDelete(selectedImage._id)}
@@ -204,6 +194,6 @@ export default function Gallery() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
