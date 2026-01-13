@@ -33,7 +33,7 @@ export default function Navbarlogin() {
             <div className="navigation_links_login col-md-6 d-flex justify-content-start align-items-center gap-3">
                 <a href="/upload">Home</a>
                 <div className='navigation_links_second_login'>
-                    <Link to="/gallery" className='ms-5'>Mon historique</Link> | <Link href="#">Mon compte</Link> | <Link onClick={(e)=>{e.preventDefault();handleLogout()}}>Logout</Link>
+                    <Link to="/gallery" className='ms-5'>Mon historique</Link> | <Link href="/home">Mon compte</Link> | <Link onClick={(e)=>{e.preventDefault();handleLogout()}}>Logout</Link>
                 </div>
             </div>
         </nav>

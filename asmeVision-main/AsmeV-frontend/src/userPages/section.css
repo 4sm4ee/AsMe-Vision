@@ -292,5 +292,23 @@
 }
 
 .analysis_result {
-    background: rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); /* Light gradient matching app's purple-indigo theme */
+    border: 1px solid rgba(102, 126, 234, 0.3); /* Subtle border to match preview image */
+    border-radius: 15px; /* Rounded corners like preview */
+    padding: 20px; /* Better spacing */
+    margin-top: 20px; /* Spacing from button */
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1); /* Light shadow for depth */
+    color: #333; /* Text color matching description-text */
+}
+
+.analysis_result h5 {
+    color: #6366f1; /* Matching upload button color for heading */
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.analysis_result p {
+    line-height: 1.6;
+    font-size: 1rem;
+    white-space: pre-wrap; /* Preserve formatting */
 }

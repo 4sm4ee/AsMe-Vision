@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import './gallery.css';
+import './gallery.css'; // Updated CSS file with merged styles
 
 export default function Gallery() {
   const [images, setImages] = useState([]);
+  const [filteredImages, setFilteredImages] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,6 +39,7 @@ export default function Gallery() {
       }
 
       setImages(data.images);
+      setFilteredImages(data.images);
       
       if (data.images.length > 0) {
         setSelectedImage(data.images[0]);
@@ -53,6 +51,16 @@ export default function Gallery() {
       setError(err.message);
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    const filtered = images.filter(img => 
+      img.description.toLowerCase().includes(term) || 
+      img.filename.toLowerCase().includes(term)
+    );
+    setFilteredImages(filtered);
   };
 
   const handleDelete = async (imageId) => {
@@ -82,6 +90,10 @@ export default function Gallery() {
       // Mettre à jour la liste des images
       const updatedImages = images.filter(img => img._id !== imageId);
       setImages(updatedImages);
+      setFilteredImages(updatedImages.filter(img => 
+        img.description.toLowerCase().includes(searchTerm) || 
+        img.filename.toLowerCase().includes(searchTerm)
+      ));
 
       // Si l'image supprimée était sélectionnée, sélectionner la première image restante
       if (selectedImage?._id === imageId) {
@@ -109,7 +121,7 @@ export default function Gallery() {
 
   if (loading) {
     return (
-      <div className="historique-container">
+      <div className="gallery-container">
         <div className="loading">
           <div className="spinner"></div>
           <p>Chargement...</p>
@@ -117,83 +129,74 @@ export default function Gallery() {
       </div>
     );
   }
-  if(error){
-    return(
-      <div className="historique-container">
+
+  if (error) {
+    return (
+      <div className="gallery-container">
         <div className="error-message">
           <p>{error}</p>
         </div>
       </div>
-    );}
-  if (images.length === 0){
+    );
+  }
+
+  if (images.length === 0) {
     return (
-      <div className="historique-container">
+      <div className="gallery-container">
         <div className="empty-state">
           <p>Aucune image disponible</p>
           <a href="/upload">Analyser une image</a>
         </div>
       </div>
-    );}
+    );
+  }
+
   return (
-    <>
-      <div className="container mt-4">
-        <div className="row">
-          <div className="col-md-6 col-12">
-            <div className="swiper-section">
-              <Swiper
-                modules={[Navigation, Pagination]}
-                spaceBetween={20}
-                slidesPerView={1}
-                navigation
-                pagination={{ clickable: true }}
-                onSlideChange={(swiper) => {
-                  setSelectedImage(images[swiper.activeIndex]);
-                }}
-                className="images-swiper"
-              >
-                {images.map((image) => (
-                  <SwiperSlide key={image._id}>
-                    <div 
-                      className="swiper-image-container"
-                      onClick={() => setSelectedImage(image)}>
-                      <img 
-                        src={`http://localhost:3000${image.url}`} 
-                        alt={image.filename}
-                        className="swiper-image"
-                      />
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+    <div className="gallery-container">
+      <input 
+        type="text" 
+        placeholder="search...." 
+        value={searchTerm} 
+        onChange={handleSearch} 
+        className="search-bar"
+      />
+      <div className="image-grid">
+        {filteredImages.map((image) => (
+          <img 
+            key={image._id} 
+            src={`http://localhost:3000${image.url}`} 
+            alt={image.filename} 
+            className="grid-image" 
+            onClick={() => setSelectedImage(image)} 
+          />
+        ))}
+      </div>
+      {selectedImage && (
+        <div className="modal-backdrop">
+          <div className="modal-box">
+            <img 
+              src={`http://localhost:3000${selectedImage.url}`} 
+              alt={selectedImage.filename} 
+              className="modal-image"
+            />
+            <div className="description-box">
+              <h3 className='text-dark'>Description</h3>
+              <p className="description-text">{selectedImage.description}</p>
             </div>
-          </div>
-          {/* Description à droite - col-md-6 */}
-          <div className="col-md-6 col-12">
-            <div className="details-section">
-              {selectedImage ? (
-                <div className="details-content">
-                  <div className="description-box">
-                    <h3 className='text-dark'>Description</h3>
-                    <p className="description-text">{selectedImage.description}</p>
-                  </div>
-                  <div className="date-box text-dark">
-                    <strong>Date:</strong> {formatDate(selectedImage.uploadedAt)}
-                  </div>
-                  <button 
-                    className="delete-btn"
-                    onClick={() => handleDelete(selectedImage._id)}
-                    disabled={deleting}
-                  >
-                    {deleting ? 'Suppression...' : 'Supprimer'}
-                  </button>
-                </div>
-              ) : (
-                <p className="no-selection">Sélectionnez une image</p>
-              )}
-            </div>
+            <p className="date-box text-dark">
+              <strong>Date:</strong> {formatDate(selectedImage.uploadedAt)}
+            </p>
+            <button 
+              className="delete-btn"
+              onClick={() => handleDelete(selectedImage._id)}
+              disabled={deleting}
+            >
+              {deleting ? 'Suppression...' : 'Supprimer'}
+            </button>
+            <button className="close-btn" onClick={() => setSelectedImage(null)}>X</button>
           </div>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
