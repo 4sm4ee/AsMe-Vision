@@ -11,12 +11,14 @@
 */
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
 
 import routes from "../../routes";
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   
   const mobileSidebarToggle = (e) => {
     e.preventDefault();
@@ -29,6 +31,16 @@ function Header() {
     };
     document.body.appendChild(node);
   };
+  const handleLogout = () => {
+          const confirmLogout = window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
+          
+          if (confirmLogout) {
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              window.dispatchEvent(new Event('storage'));
+              navigate('/');
+          }
+      };
 
   const getBrandText = () => {
     for (let i = 0; i < routes.length; i++) {
@@ -78,11 +90,7 @@ function Header() {
           </Nav>
           <Nav className="ml-auto" navbar>
             <Nav.Item>
-              <Nav.Link
-                className="m-0"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
+              <Nav.Link onClick={(e)=>{e.preventDefault();handleLogout()}}>
                 <span className="no-icon">Log out</span>
               </Nav.Link>
             </Nav.Item>
