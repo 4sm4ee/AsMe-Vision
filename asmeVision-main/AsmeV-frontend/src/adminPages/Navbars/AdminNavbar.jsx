@@ -12,11 +12,18 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
+import { useNavigate } from 'react-router-dom';
 
 import routes from "../../routes";
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  navigate('/');
+};
   
   const mobileSidebarToggle = (e) => {
     e.preventDefault();
@@ -80,8 +87,8 @@ function Header() {
             <Nav.Item>
               <Nav.Link
                 className="m-0"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
+                onClick={handleLogout}
+                style={{ cursor: 'pointer' }}
               >
                 <span className="no-icon">Log out</span>
               </Nav.Link>

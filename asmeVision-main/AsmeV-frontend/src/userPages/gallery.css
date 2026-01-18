@@ -83,11 +83,11 @@
 }
 
 .modal-box {
-    width: 350px;          /* Made even smaller (was 320px) */
-    max-width: 90vw;       /* Responsive: won't exceed 90% of viewport width */
-    max-height: 70vh;      /* Reduced max-height to keep entire modal visible without much scrolling */
+    width: 450;          
+    max-width: 90vw;      
+    max-height: 70vh;      
     background: white;
-    padding: 20px;         /* Slightly reduced padding */
+    padding: 20px;         
     border-radius: 12px;
     position: relative;
     overflow-y: auto;      /* Scroll if content (like long description) is too tall */

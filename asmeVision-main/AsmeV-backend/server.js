@@ -140,14 +140,12 @@ app.post("/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ error: "Incorrect password" });
 
-    // Créer un JWT token
+
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET || "your_secret_key_2024",
       { expiresIn: "24h" }
     );
-
-    // S'assurer que la réponse est bien formatée
     return res.status(200).json({
       message: "Login successful",
       token: token,
@@ -165,34 +163,27 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// ==================== ROUTES IMAGES ====================
 
-// Analyser et sauvegarder une image
 app.post("/analyze", authenticateToken, upload.single("image"), async (req, res) => {
   try {
-    console.log("📸 Analyze request from user:", req.user.userId);
+    console.log("Analyze request from user:", req.user.userId);
     
     if (!req.file) {
-      console.log("❌ No file uploaded");
+      console.log("No file uploaded");
       return res.status(400).json({ error: "No image provided" });
     }
 
-    console.log("✅ File received:", req.file.originalname, req.file.mimetype);
+    console.log("File received:", req.file.originalname, req.file.mimetype);
 
     const buffer = fs.readFileSync(req.file.path);
-    console.log("✅ File read, size:", buffer.length, "bytes");
+    console.log("File read, size:", buffer.length, "bytes");
 
-    // Vérifier la clé API
     const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error("❌ API_KEY or GEMINI_API_KEY not found in .env");
+      console.error("API_KEY or GEMINI_API_KEY not found in .env");
       fs.unlinkSync(req.file.path);
       return res.status(500).json({ error: "API configuration error" });
     }
-
-    console.log("🤖 Calling Google AI...");
-    
-    // Analyser avec Google AI
     const ai = new GoogleGenAI({
       apiKey: apiKey
     });
@@ -212,7 +203,6 @@ app.post("/analyze", authenticateToken, upload.single("image"), async (req, res)
     const description = response.candidates[0].content.parts[0].text;
     console.log("📝 Description:", description.substring(0, 100) + "...");
 
-    // Sauvegarder dans MongoDB avec l'URL du fichier
     const imageUrl = `/uploads/${req.file.filename}`;
     
     const newImage = await Image.create({
@@ -224,9 +214,6 @@ app.post("/analyze", authenticateToken, upload.single("image"), async (req, res)
     });
 
     console.log("✅ Image saved to DB with ID:", newImage._id);
-
-    // NE PAS supprimer le fichier - il reste dans uploads/
-    // fs.unlinkSync(req.file.path);
 
     res.json({
       success: true,
@@ -251,7 +238,7 @@ app.post("/analyze", authenticateToken, upload.single("image"), async (req, res)
 app.delete("/delete-image/:id", authenticateToken, async (req, res) => {
   try {
     const imageId = req.params.id;
-    console.log("🗑️ Delete request for image:", imageId);
+    console.log("Delete request for image:", imageId);
     
     const image = await Image.findOne({ 
       _id: imageId, 
@@ -389,7 +376,6 @@ app.delete('/admin/users/:id', authenticateAdmin, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
 
 app.listen(port, () => 
   console.log(`🚀 Server running on http://localhost:${port}`)

@@ -1,14 +1,13 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-
 import AdminNavbar from "../adminPages/Navbars/AdminNavbar";
 import Footer from "../adminPages/Footer/Footer";
 import Sidebar from "../adminPages/Sidebar/Sidebar";
-
 import routes from "../routes";
+import natureImage from "../assets/image_nature.jpeg";
 
 function Admin() {
-  const [image, setImage] = React.useState(null);
+  const [image, setImage] = React.useState(natureImage);
   const [color, setColor] = React.useState("black");
   const [hasImage, setHasImage] = React.useState(true);
   const mainPanel = React.useRef(null);
@@ -46,16 +45,18 @@ function Admin() {
   return (
     <>
       <div className="wrapper">
-        <Sidebar color={color} image={hasImage ? image : ""} routes={routes} />
+        <Sidebar
+          color={color}
+          image={image}
+          hasImage={hasImage}
+          routes={routes}
+        />
         <div className="main-panel" ref={mainPanel}>
           <AdminNavbar />
           <div className="content">
             <Routes>
               {getRoutes(routes)}
-              <Route
-                path="/"
-                element={<Navigate to="/admin/dashboard" replace />}
-              />
+              <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
             </Routes>
           </div>
           <Footer />
@@ -64,5 +65,4 @@ function Admin() {
     </>
   );
 }
-
 export default Admin;

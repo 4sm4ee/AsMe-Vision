@@ -11,7 +11,7 @@
 */
 import React from "react";
 import Dashboard from "./views/Dashboard.jsx";
-import UserProfile from "./views/UserProfile.jsx";
+
 import TableList from "./views/TableList.jsx";
 import "./routes.css";
 
@@ -24,13 +24,6 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
-    path: "/user",
-    name: "User Profile",
-    icon: "fas fa-user",
-    component: <UserProfile />,
-    layout: "/admin"
-  },
-  {
     path: "/table",
     name: "Table List",
     icon: "fas fa-table",
@@ -38,5 +31,4 @@ const dashboardRoutes = [
     layout: "/admin"
   }
 ];
-
 export default dashboardRoutes;
