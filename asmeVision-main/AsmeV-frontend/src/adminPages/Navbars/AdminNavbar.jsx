@@ -10,20 +10,14 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
-import { useNavigate } from 'react-router-dom';
 
 import routes from "../../routes";
 
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
-  const handleLogout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  navigate('/');
-};
   
   const mobileSidebarToggle = (e) => {
     e.preventDefault();
@@ -35,6 +29,17 @@ function Header() {
       document.documentElement.classList.toggle("nav-open");
     };
     document.body.appendChild(node);
+  };
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
+    
+    if (confirmLogout) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.dispatchEvent(new Event('storage'));
+      navigate('/');
+    }
   };
 
   const getBrandText = () => {
